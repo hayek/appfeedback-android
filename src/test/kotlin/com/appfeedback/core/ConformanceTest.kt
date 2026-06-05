@@ -18,10 +18,10 @@ class ConformanceTest {
                                 val contactEmail: String?, val extraFields: Map<String, String>?)
     private data class DeviceFx(val appName: String, val appVersion: String, val buildNumber: String,
                                 val model: String, val osName: String, val osVersion: String)
-    private data class UploadedFx(val filename: String, val mimeType: String, val sizeBytes: Int, val url: String)
+    private data class UploadedFx(val filename: String, val mimeType: String, val sizeBytes: Long, val url: String)
     private data class FormatCase(val name: String, val report: ReportFx, val deviceInfo: DeviceFx,
                                   val uploaded: List<UploadedFx>?, val expectedBody: String, val expectedLabels: List<String>?)
-    private data class AttachmentExp(val filename: String, val mimeType: String, val url: String, val sizeBytes: Int?)
+    private data class AttachmentExp(val filename: String, val mimeType: String, val url: String, val sizeBytes: Long?)
     private data class ParsedExp(val description: String, val appName: String?, val appVersion: String?,
                                  val device: String?, val osVersion: String?, val email: String?, val attachments: List<AttachmentExp>?)
     private data class ParseCase(val name: String, val body: String, val expected: ParsedExp)

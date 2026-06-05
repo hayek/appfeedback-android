@@ -5,6 +5,8 @@ package com.appfeedback.core
 object IssueBodyParser {
 
     fun parse(raw: String): ParsedFeedbackBody {
+        // Normalize CRLF / lone CR to LF so web-UI-authored bodies parse identically.
+        val normalized = raw.replace("\r\n", "\n").replace("\r", "\n")
         val descLines = mutableListOf<String>()
         var inDevice = false
         var expectEmail = false
@@ -14,7 +16,7 @@ object IssueBodyParser {
         var osVersion: String? = null
         var email: String? = null
 
-        for (line in raw.split("\n")) {
+        for (line in normalized.split("\n")) {
             val trimmed = line.trim().replace("**", "").trim()
 
             if (trimmed == BodyMarker.DEVICE_HEADER) { inDevice = true; continue }
@@ -55,7 +57,7 @@ object IssueBodyParser {
             device = device,
             osVersion = osVersion,
             email = email,
-            attachments = parseAttachments(raw),
+            attachments = parseAttachments(normalized),
         )
     }
 
@@ -93,27 +95,27 @@ object IssueBodyParser {
         val rest = afterName.substring(urlEnd + 1).trim()
 
         var mime: String? = null
-        var size: Int? = null
+        var size: Long? = null
         if (rest.startsWith("—")) {
             val suffix = rest.removePrefix("—").trim()
             val parts = suffix.split(",", limit = 2).map { it.trim() }
-            mime = parts[0]
+            mime = parts[0].takeIf { it.isNotEmpty() }
             if (parts.size > 1) size = parseHumanByteCount(parts[1])
         }
         val resolvedMime = mime ?: inferMimeFromUrl(url)
         return ParsedAttachment(filename, resolvedMime, url, size)
     }
 
-    internal fun parseHumanByteCount(s: String): Int? {
+    internal fun parseHumanByteCount(s: String): Long? {
         val parts = s.split(" ", limit = 2)
         val num = parts.getOrNull(0)?.toDoubleOrNull() ?: return null
         val unit = if (parts.size > 1) parts[1].uppercase() else "B"
         return when (unit) {
-            "BYTES", "B" -> num.toInt()
-            "KB" -> (num * 1_000).toInt()
-            "MB" -> (num * 1_000_000).toInt()
-            "GB" -> (num * 1_000_000_000).toInt()
-            else -> num.toInt()
+            "BYTES", "B" -> num.toLong()
+            "KB" -> (num * 1_000).toLong()
+            "MB" -> (num * 1_000_000).toLong()
+            "GB" -> (num * 1_000_000_000).toLong()
+            else -> num.toLong()
         }
     }
 

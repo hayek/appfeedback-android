@@ -4,7 +4,7 @@ data class ParsedAttachment(
     val filename: String,
     val mimeType: String,
     val url: String,
-    val sizeBytes: Int?,
+    val sizeBytes: Long?,
 )
 
 data class ParsedFeedbackBody(

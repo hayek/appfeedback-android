@@ -6,8 +6,10 @@ package com.appfeedback.core
  *  (1000-based) units; unit chosen by magnitude, then rounded half-up within
  *  it (never re-promoted), so 999_999 -> "1000 KB". Pinned by the wire spec. */
 object DeterministicByteCount {
-    fun string(bytes: Int): String {
-        val b = maxOf(0, bytes).toLong()
+    fun string(bytes: Int): String = string(bytes.toLong())
+
+    fun string(bytes: Long): String {
+        val b = maxOf(0L, bytes)
         val units = listOf("GB" to 1_000_000_000L, "MB" to 1_000_000L, "KB" to 1_000L)
         for ((name, factor) in units) {
             if (b >= factor) {

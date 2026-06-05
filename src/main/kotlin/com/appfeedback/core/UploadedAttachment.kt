@@ -4,6 +4,6 @@ package com.appfeedback.core
 data class UploadedAttachment(
     val filename: String,
     val mimeType: String,
-    val sizeBytes: Int,
+    val sizeBytes: Long,
     val url: String,
 )

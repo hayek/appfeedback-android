@@ -29,8 +29,8 @@ class IssueBodyParserTest {
         assertEquals(2, p.attachments.size)
         assertEquals("shot.png", p.attachments[0].filename)
         assertEquals("image/png", p.attachments[0].mimeType)
-        assertEquals(312000, p.attachments[0].sizeBytes)
+        assertEquals(312000L, p.attachments[0].sizeBytes)
         assertEquals("text/plain", p.attachments[1].mimeType)
-        assertEquals(4100, p.attachments[1].sizeBytes)
+        assertEquals(4100L, p.attachments[1].sizeBytes)
     }
 }
