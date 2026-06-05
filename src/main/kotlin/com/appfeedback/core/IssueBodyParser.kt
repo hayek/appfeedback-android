@@ -109,20 +109,24 @@ object IssueBodyParser {
     internal fun parseHumanByteCount(s: String): Long? {
         val parts = s.split(" ", limit = 2)
         val num = parts.getOrNull(0)?.toDoubleOrNull() ?: return null
+        if (!num.isFinite()) return null
         val unit = if (parts.size > 1) parts[1].uppercase() else "B"
-        return when (unit) {
-            "BYTES", "B" -> num.toLong()
-            "KB" -> (num * 1_000).toLong()
-            "MB" -> (num * 1_000_000).toLong()
-            "GB" -> (num * 1_000_000_000).toLong()
-            else -> num.toLong()
+        val mult = when (unit) {
+            "KB" -> 1_000.0
+            "MB" -> 1_000_000.0
+            "GB" -> 1_000_000_000.0
+            else -> 1.0   // BYTES, B, or unknown -> bytes
         }
+        val scaled = num * mult
+        if (!scaled.isFinite() || scaled < 0 || scaled > 100_000_000_000_000.0) return null
+        return scaled.toLong()
     }
 
     /** Best-effort MIME from a URL's file extension. Only used when the body line
      *  omits the MIME (not exercised by the conformance corpus). */
     internal fun inferMimeFromUrl(url: String): String {
-        val ext = url.substringAfterLast('/').substringAfterLast('.', "").lowercase()
+        val path = url.substringBefore('?').substringBefore('#')
+        val ext = path.substringAfterLast('/').substringAfterLast('.', "").lowercase()
         return when (ext) {
             "png" -> "image/png"
             "jpg", "jpeg" -> "image/jpeg"

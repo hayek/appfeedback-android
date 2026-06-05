@@ -9,7 +9,7 @@ object DeterministicByteCount {
     fun string(bytes: Int): String = string(bytes.toLong())
 
     fun string(bytes: Long): String {
-        val b = maxOf(0L, bytes)
+        val b = maxOf(0L, bytes).coerceAtMost(100_000_000_000_000L)
         val units = listOf("GB" to 1_000_000_000L, "MB" to 1_000_000L, "KB" to 1_000L)
         for ((name, factor) in units) {
             if (b >= factor) {
