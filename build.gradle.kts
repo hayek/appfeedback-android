@@ -10,6 +10,7 @@ repositories { mavenCentral() }
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation("com.google.code.gson:gson:2.11.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 }
 
 // Only JDK 26 is installed; compile on it but emit broadly-compatible JVM 17
