@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: gradle test (conformance gate + Android)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # AGP 9 rejects JDK 26; JDK 21 compiles both the JVM core and the :android module.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - name: Ensure Android SDK components
+        run: yes | sdkmanager "platforms;android-35" "build-tools;35.0.0" >/dev/null
+      # Runs the root JVM module's golden-fixture conformance tests (the
+      # cross-platform wire-format gate) plus the :android Robolectric/Compose tests.
+      - name: Run tests
+        run: ./gradlew test --no-daemon --stacktrace
