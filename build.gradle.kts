@@ -1,3 +1,13 @@
+buildscript {
+    repositories { google(); mavenCentral() }
+    dependencies {
+        // AGP must be in the root classpath so that KotlinAndroidTarget (in the
+        // Kotlin Gradle Plugin) can resolve BaseVariant when the :android
+        // subproject's plugin classloader inherits from the root.
+        classpath("com.android.tools.build:gradle:9.2.1")
+    }
+}
+
 plugins {
     kotlin("jvm") version "2.2.20"
     kotlin("plugin.serialization") version "2.2.20"
