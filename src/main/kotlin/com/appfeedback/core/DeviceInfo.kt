@@ -1,6 +1,9 @@
 package com.appfeedback.core
 
+import kotlinx.serialization.Serializable
+
 /** Per-submission device/app metadata. `current()` (via android.os.Build) is added in P1b. */
+@Serializable
 data class DeviceInfo(
     val appName: String,
     val appVersion: String,

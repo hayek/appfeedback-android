@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
 }
 
 group = "io.github.hayek"          // finalized in P1c (publishing)
@@ -11,6 +12,12 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("com.google.code.gson:gson:2.11.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("io.ktor:ktor-client-core:3.0.3")
+    implementation("io.ktor:ktor-client-cio:3.0.3")
+    implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")
+    testImplementation("io.ktor:ktor-client-mock:3.0.3")
 }
 
 // Only JDK 26 is installed; compile on it but emit broadly-compatible JVM 17
