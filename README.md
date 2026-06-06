@@ -1,5 +1,7 @@
 # appfeedback-android
 
+[![CI](https://github.com/hayek/appfeedback-android/actions/workflows/ci.yml/badge.svg)](https://github.com/hayek/appfeedback-android/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 The **Android (Kotlin)** SDK in the [AppFeedback](https://hayek.github.io/appfeedback-docs/) family. It turns in-app feedback into a GitHub issue — in the exact same byte-for-byte wire format as the [Apple](https://github.com/hayek/AppFeedbackSDK) and [Web](https://github.com/hayek/appfeedback-web) SDKs.
 
 > **Status:** the shared `com.appfeedback.core` module (wire format, transports, `FeedbackClient`) is implemented and passes the cross-platform conformance gate. Maven Central publishing and the Compose UI module are in progress — until then, build from this repo.
