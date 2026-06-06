@@ -11,6 +11,10 @@ buildscript {
 plugins {
     kotlin("jvm") version "2.2.20"
     kotlin("plugin.serialization") version "2.2.20"
+    // Dokka 2.x: HTML API reference generation for the root JVM module only.
+    // Scoped to this build file so the :android subproject is not pulled in
+    // (that would require Dokka's Android support + the Android toolchain).
+    id("org.jetbrains.dokka") version "2.0.0"
 }
 
 group = "io.github.hayek"          // finalized in P1c (publishing)
@@ -45,3 +49,16 @@ kotlin {
 }
 
 tasks.test { useJUnitPlatform() }
+
+// Dokka HTML output directory. Generate with:
+//   ./gradlew :dokkaGeneratePublicationHtml
+// (run on the root project only; do not invoke on :android).
+dokka {
+    // URL-safe module name: Dokka derives the output sub-directory from this,
+    // and any spaces/parens/uppercase would leak into hosted URLs. Keep it
+    // all-lowercase + hyphenated so the path stays clean on GitHub Pages.
+    moduleName.set("appfeedback-android")
+    dokkaPublications.html {
+        outputDirectory.set(layout.buildDirectory.dir("dokka/html"))
+    }
+}
