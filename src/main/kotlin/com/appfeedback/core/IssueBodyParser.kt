@@ -4,6 +4,20 @@ package com.appfeedback.core
  *  Tolerant of hand-written / legacy bodies. Port of the Swift `IssueBodyParser`. */
 object IssueBodyParser {
 
+    /** Canonical ASCII whitespace set the parser trims, per the wire-format spec:
+     *  `{ U+0009, U+000A, U+000B, U+000C, U+000D, U+0020 }` and nothing else.
+     *  Deliberately NOT `String.trim()`, which strips the whole Unicode-defined
+     *  whitespace set (NBSP, NEL, BOM, …) and would diverge from Swift/TS. Non-ASCII
+     *  whitespace is preserved verbatim, identically across all three ports. */
+    private val ASCII_WS = charArrayOf('\u0009', '\u000A', '\u000B', '\u000C', '\u000D', '\u0020')
+    private fun String.trimAscii(): String = trim { it in ASCII_WS }
+
+    /** ASCII-decimal magnitude grammar, per the wire-format spec. Tokens that
+     *  don't match (`0x10`, `0b1010`, `0o17`, `0xAp2`, `Infinity`, `NaN`, …) are
+     *  rejected so the size is treated as absent. The JVM's `Double` parser accepts
+     *  hex-float forms, so we MUST gate on this regex to match Swift/TS. */
+    private val DECIMAL_MAGNITUDE = Regex("^[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?$")
+
     fun parse(raw: String): ParsedFeedbackBody {
         // Normalize CRLF / lone CR to LF so web-UI-authored bodies parse identically.
         val normalized = raw.replace("\r\n", "\n").replace("\r", "\n")
@@ -17,7 +31,7 @@ object IssueBodyParser {
         var email: String? = null
 
         for (line in normalized.split("\n")) {
-            val trimmed = line.trim().replace("**", "").trim()
+            val trimmed = line.trimAscii().replace("**", "").trimAscii()
 
             if (trimmed == BodyMarker.DEVICE_HEADER) { inDevice = true; continue }
             if (!inDevice) { descLines.add(line); continue }
@@ -36,7 +50,7 @@ object IssueBodyParser {
                 app != null -> appName = app
                 dev != null -> device = dev
                 BodyMarker.osVersionRegex.containsMatchIn(trimmed) ->
-                    osVersion = trimmed.split(":").drop(1).joinToString(":").trim()
+                    osVersion = trimmed.split(":").drop(1).joinToString(":").trimAscii()
                 trimmed == BodyMarker.CONTACT_EMAIL_LABEL -> expectEmail = true
                 else -> {
                     val v = valueAfter(trimmed, BodyMarker.CONTACT_EMAIL_LABEL)
@@ -46,9 +60,9 @@ object IssueBodyParser {
         }
 
         val description = descLines
-            .filter { it.trim() != BodyMarker.HORIZONTAL_RULE }
+            .filter { it.trimAscii() != BodyMarker.HORIZONTAL_RULE }
             .joinToString("\n")
-            .trim()
+            .trimAscii()
 
         return ParsedFeedbackBody(
             description = description,
@@ -62,7 +76,7 @@ object IssueBodyParser {
     }
 
     private fun valueAfter(s: String, marker: String): String? =
-        if (s.startsWith(marker)) s.removePrefix(marker).trim() else null
+        if (s.startsWith(marker)) s.removePrefix(marker).trimAscii() else null
 
     private fun parseAttachments(raw: String): List<ParsedAttachment> {
         val openIdx = raw.indexOf(BodyMarker.ATTACHMENTS_OPEN)
@@ -73,7 +87,7 @@ object IssueBodyParser {
 
         val results = mutableListOf<ParsedAttachment>()
         for (rawLine in block.split("\n")) {
-            parseAttachmentLine(rawLine.trim())?.let { results.add(it) }
+            parseAttachmentLine(rawLine.trimAscii())?.let { results.add(it) }
         }
         return results
     }
@@ -92,13 +106,13 @@ object IssueBodyParser {
         if (urlEnd < 0) return null
         val url = afterName.substring(0, urlEnd)
         if (url.isEmpty()) return null
-        val rest = afterName.substring(urlEnd + 1).trim()
+        val rest = afterName.substring(urlEnd + 1).trimAscii()
 
         var mime: String? = null
         var size: Long? = null
         if (rest.startsWith("—")) {
-            val suffix = rest.removePrefix("—").trim()
-            val parts = suffix.split(",", limit = 2).map { it.trim() }
+            val suffix = rest.removePrefix("—").trimAscii()
+            val parts = suffix.split(",", limit = 2).map { it.trimAscii() }
             mime = parts[0].takeIf { it.isNotEmpty() }
             if (parts.size > 1) size = parseHumanByteCount(parts[1])
         }
@@ -108,7 +122,11 @@ object IssueBodyParser {
 
     internal fun parseHumanByteCount(s: String): Long? {
         val parts = s.split(" ", limit = 2)
-        val num = parts.getOrNull(0)?.toDoubleOrNull() ?: return null
+        val numStr = parts.getOrNull(0) ?: return null
+        // Reject any non-decimal token before native parsing (the JVM's `Double`
+        // would otherwise accept hex-float forms and diverge from Swift/TS).
+        if (!DECIMAL_MAGNITUDE.matches(numStr)) return null
+        val num = numStr.toDoubleOrNull() ?: return null
         if (!num.isFinite()) return null
         val unit = if (parts.size > 1) parts[1].uppercase() else "B"
         val mult = when (unit) {
@@ -122,8 +140,10 @@ object IssueBodyParser {
         return scaled.toLong()
     }
 
-    /** Best-effort MIME from a URL's file extension. Only used when the body line
-     *  omits the MIME (not exercised by the conformance corpus). */
+    /** Best-effort MIME from a URL's file extension, using the fixed, canonical
+     *  extension→MIME table from the wire-format spec — identical across the
+     *  Swift and TypeScript ports (no platform type database). Used when the body
+     *  line omits the MIME. */
     internal fun inferMimeFromUrl(url: String): String {
         val path = url.substringBefore('?').substringBefore('#')
         val ext = path.substringAfterLast('/').substringAfterLast('.', "").lowercase()

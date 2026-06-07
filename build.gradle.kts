@@ -36,9 +36,9 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock:3.0.3")
 }
 
-// Only JDK 26 is installed; compile on it but emit broadly-compatible JVM 17
-// bytecode. The Java and Kotlin target levels MUST match or Gradle fails with
-// "Inconsistent JVM Target Compatibility".
+// Build on JDK 21 (AGP 9 rejects JDK 26; CI pins Temurin 21). Emit
+// broadly-compatible JVM 17 bytecode — Java and Kotlin target levels MUST match
+// or Gradle fails with "Inconsistent JVM Target Compatibility".
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17

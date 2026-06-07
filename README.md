@@ -4,7 +4,7 @@
 
 The **Android (Kotlin)** SDK in the [AppFeedback](https://hayek.github.io/appfeedback-docs/) family. It turns in-app feedback into a GitHub issue — in the exact same byte-for-byte wire format as the [Apple](https://github.com/hayek/AppFeedbackSDK) and [Web](https://github.com/hayek/appfeedback-web) SDKs.
 
-> **Status:** the shared `com.appfeedback.core` module (wire format, transports, `FeedbackClient`) is implemented and passes the cross-platform conformance gate. Maven Central publishing and the Compose UI module are in progress — until then, build from this repo.
+> **Status:** the shared `com.appfeedback.core` module (wire format, transports, `FeedbackClient`) **and** the `:android` Compose UI module (`FeedbackSheet`, `currentDeviceInfo`, `androidFeedbackClient`) are implemented and pass the cross-platform conformance gate plus the Robolectric/Compose tests. Only the Maven Central registry release is still in progress — until it lands, build from this repo.
 
 ## Why byte-exact?
 
@@ -32,12 +32,19 @@ val issueNumber = client.submit(
 The `:android` module ships a themeable `FeedbackSheet`:
 
 ```kotlin
-FeedbackSheet(client = client, onDismiss = { /* … */ })
+FeedbackSheet(
+    client = client,
+    defaultType = FeedbackType.BUG,
+    onSubmitted = { issueNumber -> /* dismiss, show a toast, … */ },
+    onError = { error -> /* surface the failure */ },
+)
 ```
 
 ## Modules
 
-| Module | Coordinates (publishing in progress) | Contents |
+Both modules are implemented, tested, and wired for publishing (see [PUBLISHING.md](./PUBLISHING.md)); only the Maven Central registry release is pending.
+
+| Module | Coordinates (registry release pending) | Contents |
 | --- | --- | --- |
 | core | `io.github.hayek:appfeedback-android` | `FeedbackType`, `FeedbackReport`, `DeviceInfo`, `IssueBodyFormatter`/`IssueBodyParser`, transports, `FeedbackClient` |
 | compose | `io.github.hayek:appfeedback-android-compose` | `FeedbackSheet`, `currentDeviceInfo` |
