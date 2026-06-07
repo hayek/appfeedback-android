@@ -26,7 +26,7 @@ repositories { mavenCentral() }
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation("com.google.code.gson:gson:2.11.0")
+    testImplementation("com.google.code.gson:gson:2.14.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
     implementation("io.ktor:ktor-client-core:3.0.3")
