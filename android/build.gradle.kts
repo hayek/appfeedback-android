@@ -20,7 +20,7 @@ dependencies {
   implementation("androidx.compose.ui:ui")
   implementation("androidx.compose.material3:material3")
   implementation("androidx.compose.foundation:foundation")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.robolectric:robolectric:4.14.1")
   testImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
