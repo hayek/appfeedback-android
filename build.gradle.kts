@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "io.github.hayek"          // finalized in P1c (publishing)
-version = "0.1.0-SNAPSHOT"
+// version comes from gradle.properties (`version=…`), overridable with -Pversion=0.1.0.
 
 repositories { mavenCentral() }
 

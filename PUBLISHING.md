@@ -28,11 +28,10 @@ export JAVA_HOME=/path/to/jdk-21
 
 ## Cutting a release
 
-1. Set a release version (Central rejects `-SNAPSHOT`):
-
-   ```kotlin
-   version = "0.1.0"   // in build.gradle.kts, or pass -Pversion=0.1.0
-   ```
+1. Set a release version (Central rejects `-SNAPSHOT`). The version is a single
+   source of truth in `gradle.properties` and drives **both** the core and the
+   `:android` compose module, so set it once — edit `gradle.properties`
+   (`version=0.1.0`) or pass `-Pversion=0.1.0` on every gradle invocation below.
 
 2. Build the **signed** bundle (supply the key as Gradle properties or
    `ORG_GRADLE_PROJECT_*` env vars):

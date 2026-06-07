@@ -127,7 +127,9 @@ object IssueBodyParser {
         // Deliberately NOT `split(limit = 2)`, which leaves the extra leading space
         // on the unit field and silently demotes `4000  KB` to bytes.
         val sp = s.indexOf(' ')
-        val numStr = if (sp < 0) s else s.substring(0, sp)
+        // Trim the magnitude too (per the spec: the decimal grammar is checked
+        // *after* canonical trimming), so e.g. "4\t KB" matches like TS does.
+        val numStr = (if (sp < 0) s else s.substring(0, sp)).trimAscii()
         val unit = if (sp < 0) "B" else s.substring(sp + 1).trimAscii().uppercase()
         if (numStr.isEmpty()) return null
         // Reject any non-decimal token before native parsing (the JVM's `Double`

@@ -13,7 +13,9 @@ repositories { google(); mavenCentral() }
 // Mirror the root module's coordinates so this artifact publishes under the same
 // namespace (the AGP library uses artifactId `appfeedback-android-compose`).
 group = "io.github.hayek"
-version = "0.1.0-SNAPSHOT"
+// Follow the root's version (single source of truth in gradle.properties) so the
+// core and compose modules always publish at the same version. -Pversion overrides both.
+version = rootProject.version
 
 android {
   namespace = "com.appfeedback.android"
