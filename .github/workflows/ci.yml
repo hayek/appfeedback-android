@@ -13,7 +13,7 @@ jobs:
     name: gradle test (conformance gate + Android)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       # AGP 9 rejects JDK 26; JDK 21 compiles both the JVM core and the :android module.
       - uses: actions/setup-java@v4
         with:
