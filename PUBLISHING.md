@@ -58,7 +58,19 @@ The POM/coordinates above port over directly.
 
 ## The `:android` Compose module
 
-Only the shared `com.appfeedback.core` JVM module is wired for publishing today.
-Publishing the `:android` Compose UI module (as `appfeedback-android-compose`)
-needs the AGP `maven-publish` component (`release` variant) and is tracked as a
-follow-up.
+Both artifacts are wired:
+
+| Artifact | Module | Contents |
+| --- | --- | --- |
+| `io.github.hayek:appfeedback-android` | root | `com.appfeedback.core` — wire format, transports, `FeedbackClient` |
+| `io.github.hayek:appfeedback-android-compose` | `:android` | `FeedbackSheet`, `currentDeviceInfo`, `androidFeedbackClient` |
+
+The Compose module uses AGP single-variant publishing (`release`) with sources +
+Dokka-javadoc jars and the same gated signing. Stage it locally with:
+
+```sh
+./gradlew :android:publishReleasePublicationToLocalStagingRepository
+```
+
+When cutting a release, build and upload both staging bundles (root +
+`:android`).
