@@ -19,7 +19,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
       - name: Ensure Android SDK components
         run: yes | sdkmanager "platforms;android-35" "build-tools;35.0.0" >/dev/null
       # Runs the root JVM module's golden-fixture conformance tests (the
