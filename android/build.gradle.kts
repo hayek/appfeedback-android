@@ -1,6 +1,6 @@
 plugins {
   id("com.android.library")
-  id("org.jetbrains.kotlin.plugin.compose") version "2.2.20"
+  id("org.jetbrains.kotlin.plugin.compose") version "2.4.0"
   // Dokka 2.x: HTML API reference for the public Compose UI API. The version is
   // resolved from the root project's plugins block (it loads Dokka 2.0.0 onto the
   // shared buildscript classloader), so no version is needed here.
@@ -41,7 +41,7 @@ dependencies {
   // The BOM must be `api` too: it carries the versions for the versionless `api`
   // compose deps below, so an `implementation` BOM leaves them version-less (and
   // thus absent) in the published api variant / POM compile scope.
-  api(platform("androidx.compose:compose-bom:2024.12.01"))
+  api(platform("androidx.compose:compose-bom:2026.05.01"))
   // FeedbackSheet is a public @Composable that takes a Modifier, so the types in
   // its signature must be on the consumer's compile classpath: `@Composable`
   // comes from compose.runtime, `Modifier` from compose.ui — promote both to
@@ -51,10 +51,10 @@ dependencies {
   api("androidx.compose.ui:ui")
   implementation("androidx.compose.material3:material3")
   implementation("androidx.compose.foundation:foundation")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
   testImplementation("junit:junit:4.13.2")
-  testImplementation("org.robolectric:robolectric:4.14.1")
-  testImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
+  testImplementation("org.robolectric:robolectric:4.16.1")
+  testImplementation(platform("androidx.compose:compose-bom:2026.05.01"))
   testImplementation("androidx.compose.ui:ui-test-junit4")
   testImplementation("androidx.compose.ui:ui-test-manifest")
   debugImplementation("androidx.compose.ui:ui-test-manifest")
