@@ -29,7 +29,12 @@ dependencies {
     testImplementation("com.google.code.gson:gson:2.11.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-    implementation("io.ktor:ktor-client-core:3.0.3")
+    // `HttpClient` is the documented injection point on RelayTransport /
+    // GitHubDirectTransport public constructors, so ktor-client-core must be on
+    // the consumer's compile classpath — promote ONLY this artifact to `api`.
+    // The remaining ktor / serialization deps stay `implementation` (genuine
+    // internals; no other ktor type appears in a public signature).
+    api("io.ktor:ktor-client-core:3.0.3")
     implementation("io.ktor:ktor-client-cio:3.0.3")
     implementation("io.ktor:ktor-client-content-negotiation:3.0.3")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.3")

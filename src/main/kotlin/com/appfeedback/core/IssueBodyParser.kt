@@ -121,14 +121,20 @@ object IssueBodyParser {
     }
 
     internal fun parseHumanByteCount(s: String): Long? {
-        val parts = s.split(" ", limit = 2)
-        val numStr = parts.getOrNull(0) ?: return null
+        // Split on the FIRST ASCII space: magnitude is the substring before it,
+        // unit is everything after with the canonical ASCII whitespace trimmed from
+        // both ends (so `4000  KB` collapses to magnitude `4000`, unit `KB`).
+        // Deliberately NOT `split(limit = 2)`, which leaves the extra leading space
+        // on the unit field and silently demotes `4000  KB` to bytes.
+        val sp = s.indexOf(' ')
+        val numStr = if (sp < 0) s else s.substring(0, sp)
+        val unit = if (sp < 0) "B" else s.substring(sp + 1).trimAscii().uppercase()
+        if (numStr.isEmpty()) return null
         // Reject any non-decimal token before native parsing (the JVM's `Double`
         // would otherwise accept hex-float forms and diverge from Swift/TS).
         if (!DECIMAL_MAGNITUDE.matches(numStr)) return null
         val num = numStr.toDoubleOrNull() ?: return null
         if (!num.isFinite()) return null
-        val unit = if (parts.size > 1) parts[1].uppercase() else "B"
         val mult = when (unit) {
             "KB" -> 1_000.0
             "MB" -> 1_000_000.0

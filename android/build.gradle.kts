@@ -37,7 +37,13 @@ android {
 dependencies {
   api(project(":")) // the JVM core: FeedbackReport, DeviceInfo, FeedbackClient, transports
   implementation(platform("androidx.compose:compose-bom:2024.12.01"))
-  implementation("androidx.compose.ui:ui")
+  // FeedbackSheet is a public @Composable that takes a Modifier, so the types in
+  // its signature must be on the consumer's compile classpath: `@Composable`
+  // comes from compose.runtime, `Modifier` from compose.ui — promote both to
+  // `api`. material3 / foundation are internal to the sheet's implementation and
+  // appear in no public signature, so they stay `implementation`.
+  api("androidx.compose.runtime:runtime")
+  api("androidx.compose.ui:ui")
   implementation("androidx.compose.material3:material3")
   implementation("androidx.compose.foundation:foundation")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")

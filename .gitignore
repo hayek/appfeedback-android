@@ -3,3 +3,16 @@ build/
 *.iml
 .idea/
 .DS_Store
+
+# Local machine config (may carry sdk.dir and other paths/secrets)
+local.properties
+
+# Android build/tooling artifacts
+captures/
+.cxx/
+
+# Signing material — never commit
+*.keystore
+*.jks
+*.p12
+*.asc
