@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a problem with the AppFeedback Android/Kotlin SDK.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. Please search existing issues
+        first, then fill in as much detail as you can — reproduction steps are
+        the single most useful thing you can give us.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps, ideally with a minimal code snippet.
+      placeholder: |
+        1. Add the AppFeedback dependency
+        2. Call ...
+        3. Observe ...
+  - type: input
+    id: version
+    attributes:
+      label: Platform / version
+      description: SDK version or commit, plus Android API level (e.g. Android 14 / API 34).
+      placeholder: "appfeedback-android main @abc1234, API 34"
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: JDK version, Gradle/AGP version, device/emulator, and anything else relevant.

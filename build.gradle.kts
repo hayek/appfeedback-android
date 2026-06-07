@@ -15,6 +15,8 @@ plugins {
     // Scoped to this build file so the :android subproject is not pulled in
     // (that would require Dokka's Android support + the Android toolchain).
     id("org.jetbrains.dokka") version "2.0.0"
+    `maven-publish`
+    signing
 }
 
 group = "io.github.hayek"          // finalized in P1c (publishing)
@@ -40,6 +42,7 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar() // sources jar is added to the `java` component (required by Maven Central)
 }
 
 kotlin {
@@ -60,5 +63,70 @@ dokka {
     moduleName.set("appfeedback-android")
     dokkaPublications.html {
         outputDirectory.set(layout.buildDirectory.dir("dokka/html"))
+    }
+}
+
+// ---- Publishing (Maven Central via the Central Portal — see PUBLISHING.md) ----
+// A Dokka-generated HTML javadoc jar (Maven Central requires a javadoc artifact).
+val dokkaJavadocJar by tasks.registering(Jar::class) {
+    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
+    from(layout.buildDirectory.dir("dokka/html"))
+    archiveClassifier.set("javadoc")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"]) // main jar + sources jar (via withSourcesJar)
+            artifact(dokkaJavadocJar)
+            artifactId = "appfeedback-android"
+            pom {
+                name.set("AppFeedback for Android")
+                description.set(
+                    "Android (Kotlin) feedback SDK — turn in-app feedback into a GitHub issue, " +
+                        "in one byte-exact wire format shared across Apple, Android & Web.",
+                )
+                url.set("https://github.com/hayek/appfeedback-android")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://github.com/hayek/appfeedback-android/blob/main/LICENSE")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("hayek")
+                        name.set("Amir Hayek")
+                        url.set("https://github.com/hayek")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/hayek/appfeedback-android")
+                    connection.set("scm:git:https://github.com/hayek/appfeedback-android.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/hayek/appfeedback-android.git")
+                }
+            }
+        }
+    }
+    repositories {
+        // Local staging dir. The real upload is a Central Portal bundle built
+        // from here (see PUBLISHING.md) — Sonatype OSSRH direct deploy is retired.
+        maven {
+            name = "localStaging"
+            url = uri(layout.buildDirectory.dir("staging-deploy"))
+        }
+    }
+}
+
+// Sign only when a key is supplied, so `test`/CI run without GPG. Provide via
+// -PsigningInMemoryKey=<ascii-armored-key> -PsigningInMemoryKeyPassword=<pw>
+// (or the matching ORG_GRADLE_PROJECT_ env vars) when publishing a release.
+signing {
+    val signingKey = providers.gradleProperty("signingInMemoryKey").orNull
+    val signingPassword = providers.gradleProperty("signingInMemoryKeyPassword").orNull
+    isRequired = signingKey != null
+    if (signingKey != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications["maven"])
     }
 }
