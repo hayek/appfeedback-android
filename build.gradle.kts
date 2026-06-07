@@ -14,7 +14,7 @@ plugins {
     // Dokka 2.x: HTML API reference generation for the root JVM module only.
     // Scoped to this build file so the :android subproject is not pulled in
     // (that would require Dokka's Android support + the Android toolchain).
-    id("org.jetbrains.dokka") version "2.0.0"
+    id("org.jetbrains.dokka") version "2.2.0"
     `maven-publish`
     signing
 }
