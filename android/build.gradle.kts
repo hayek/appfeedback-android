@@ -38,7 +38,10 @@ android {
 }
 dependencies {
   api(project(":")) // the JVM core: FeedbackReport, DeviceInfo, FeedbackClient, transports
-  implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+  // The BOM must be `api` too: it carries the versions for the versionless `api`
+  // compose deps below, so an `implementation` BOM leaves them version-less (and
+  // thus absent) in the published api variant / POM compile scope.
+  api(platform("androidx.compose:compose-bom:2024.12.01"))
   // FeedbackSheet is a public @Composable that takes a Modifier, so the types in
   // its signature must be on the consumer's compile classpath: `@Composable`
   // comes from compose.runtime, `Modifier` from compose.ui — promote both to
