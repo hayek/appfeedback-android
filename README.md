@@ -51,6 +51,25 @@ Both modules are implemented, tested, and wired for publishing (see [PUBLISHING.
 
 minSdk 24.
 
+## Sample app
+
+The `:sample` module is a tiny runnable app that hosts the real `FeedbackSheet`
+in a modal bottom sheet, wired to a mock transport (so it runs with no GitHub
+token — submissions return a fake issue number). It's the quickest way to see
+how the SDK looks and behaves.
+
+```sh
+export JAVA_HOME=/path/to/jdk-21
+./gradlew :sample:assembleDebug                 # build the APK
+# install + launch on a running emulator/device:
+./gradlew :sample:installDebug
+adb shell am start -n com.appfeedback.sample/.MainActivity
+```
+
+Or just open the project in Android Studio and run the **sample** configuration
+(the `FeedbackSheet` also has an `@Preview`). Swap `MockTransport` for
+`GitHubDirectTransport` / `RelayTransport` to talk to a real backend.
+
 ## Build & test
 
 ```sh

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pure-Compose app: the activity only needs a no-action-bar host theme;
+         all real styling comes from MaterialTheme in setContent. Uses the
+         framework Material theme to avoid an AppCompat/Material-Components dep. -->
+    <style name="Theme.AppFeedbackSample" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
