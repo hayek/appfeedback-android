@@ -1,8 +1,11 @@
 package com.appfeedback.android
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import com.appfeedback.core.DeviceInfo
 import com.appfeedback.core.FeedbackClient
@@ -30,13 +33,18 @@ class FeedbackSheetTest {
     val client = FeedbackClient(transport) { DeviceInfo("A", "1", "1", "Pixel", "Android", "14") }
     rule.setContent { FeedbackSheet(client) }
 
-    rule.onNodeWithText("Summary").performTextInput("Crash")
-    rule.onNodeWithText("What happened?").performTextInput("It broke")
-    rule.onNodeWithText("Send feedback").performClick()
+    rule.onNodeWithTag("afb-title").performTextInput("Crash")
+    rule.onNodeWithTag("afb-description").performTextInput("It broke")
+    // The form scrolls; bring the submit button on-screen so the tap lands.
+    rule.onNodeWithText("Submit").performScrollTo().performClick()
     rule.waitForIdle()
 
     assertEquals("Crash", transport.report?.title)
     assertEquals("It broke", transport.report?.description)
-    rule.onNodeWithText("Thanks for the feedback!").assertExists()
+    // The success screen replaces the form once the (async) submit resolves.
+    rule.waitUntil(timeoutMillis = 3_000) {
+      rule.onAllNodesWithText("Thanks!").fetchSemanticsNodes().isNotEmpty()
+    }
+    rule.onNodeWithText("Thanks!").assertExists()
   }
 }

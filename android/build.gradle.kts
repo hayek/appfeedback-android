@@ -50,6 +50,7 @@ dependencies {
   api("androidx.compose.runtime:runtime")
   api("androidx.compose.ui:ui")
   implementation("androidx.compose.material3:material3")
+  implementation("androidx.compose.material:material-icons-core") // hero/type/email/success icons
   implementation("androidx.compose.foundation:foundation")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
   testImplementation("junit:junit:4.13.2")

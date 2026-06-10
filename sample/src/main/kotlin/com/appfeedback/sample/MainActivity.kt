@@ -96,7 +96,8 @@ private fun SampleApp() {
     ModalBottomSheet(onDismissRequest = { showSheet = false }, sheetState = sheetState) {
       FeedbackSheet(
         client = client,
-        onSubmitted = { n -> lastIssue = n; showSheet = false },
+        onSubmitted = { n -> lastIssue = n },   // record; the sheet shows its success screen
+        onDone = { showSheet = false },          // "Done" on the success screen dismisses
       )
     }
   }
